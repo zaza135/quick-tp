@@ -1,0 +1,60 @@
+-- open sourced script by star.oddyssey.
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local RootPart = Character:WaitForChild("HumanoidRootPart")
+
+local pushEnabled = false
+local pushDistance = 12 
+local teleportOffset = 12  -- Distance to teleport behind the player
+
+local function onCharacterAdded(character)
+    RootPart = character:WaitForChild("HumanoidRootPart")
+end
+
+LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
+
+local function teleportBehindPlayer(otherPlayer)
+    local otherRootPart = otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if otherRootPart then
+        local directionToPlayer = (otherRootPart.Position - RootPart.Position).unit
+        local targetPosition = otherRootPart.Position + directionToPlayer * teleportOffset
+        targetPosition = Vector3.new(targetPosition.X, otherRootPart.Position.Y, targetPosition.Z) -- Keep same Y level as the other player
+
+        -- Directly set the character's CFrame to the target position
+        RootPart.CFrame = CFrame.new(targetPosition, otherRootPart.Position)
+    end
+end
+
+local function checkProximity()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local directionToPlayer = (player.Character.HumanoidRootPart.Position - RootPart.Position).unit
+            local distance = (RootPart.Position - player.Character.HumanoidRootPart.Position).Magnitude
+            if distance < pushDistance then
+                teleportBehindPlayer(player)
+            end
+        end
+    end
+end
+
+local function togglePush()
+    pushEnabled = not pushEnabled
+    if pushEnabled then
+        pushConnection = RunService.Heartbeat:Connect(checkProximity)
+    else
+        if pushConnection then
+            pushConnection:Disconnect()
+        end
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == Enum.KeyCode.X then
+        togglePush()
+    end
+end)
