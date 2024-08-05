@@ -1,5 +1,6 @@
--- open sourced script by star.oddyssey.
-
+-- open sourced /developed by star.oddyssey.
+-- X toggle
+-- tp distance can be adjusted it is kept at 12 due to ping delay, 
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
@@ -9,8 +10,8 @@ local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local RootPart = Character:WaitForChild("HumanoidRootPart")
 
 local pushEnabled = false
-local pushDistance = 12 
-local teleportOffset = 12  -- Distance to teleport behind the player
+local pushDistance = 9  -- can be modified, I recommend keeping both these values same as each other if u wanna modify the tp distance
+local teleportOffset = 9  -- can be modified, adjustable tp distance
 
 local function onCharacterAdded(character)
     RootPart = character:WaitForChild("HumanoidRootPart")
